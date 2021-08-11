@@ -1,11 +1,15 @@
 # Weekly Challenge: 2nd week
 # https://programmers.co.kr/learn/courses/30/lessons/83201?language=python3
 # 첫시도 실패 케이스: 10, 12, 15, 16, 19 - 중복여부를 잘못 적용하고 있었음
-# 두번째 시도 통과
+# 두번째 시도: 통과
+# 세번째 시도: 개선 transpose, labeling (윤응구님 풀이 참고)
+## 윤응구님의 풀이
+## solution = lambda scores: "".join(map(lambda m: "FDDCBAA"[max(int(sum(m) / len(m) / 10) - 4, 0)], map(lambda m: (m[0], *m[1]) if min(m[1]) <= m[0] <= max(m[1]) else m[1], ((s[i], s[:i] + s[i+1:]) for i, s in enumerate(zip(*scores))))))
+
 
 def solution(scores):
     answer = ''
-    scores = transpose(scores)
+    scores = zip(*scores)
     for idx, scos in enumerate(scores):
         mini, maxi, total, is_once = calculate(scos, idx)
         people = len(scos)
@@ -13,16 +17,8 @@ def solution(scores):
         if is_once and self in (mini, maxi):
             total -= self
             people -= 1
-        answer += labeling(total / people)
+        answer += "FDDCBAA"[max(0, int(total/people/10)-4)]
     return answer
-
-
-def transpose(arrs):
-    result = [[0 for _ in range(len(arrs))] for _ in range(len(arrs[0]))]
-    for idx, arr in enumerate(arrs):
-        for jdx in range(len(arr)):
-            result[jdx][idx] = arr[jdx]
-    return result
 
 
 def calculate(scos, idx):
@@ -39,19 +35,6 @@ def calculate(scos, idx):
         if i != idx and sco == scos[idx]:
             is_once = False
     return mini, maxi, total, is_once
-
-
-def labeling(score):
-    if score >= 90:
-        return "A"
-    elif score >= 80:
-        return "B"
-    elif score >= 70:
-        return "C"
-    elif score >= 50:
-        return "D"
-    else:
-        return "F"
 
 
 if __name__ == "__main__":
