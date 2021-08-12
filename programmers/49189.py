@@ -3,21 +3,33 @@
 # Depth-First Search (DFS) - Stack, Recursive
 # Breadth-First Search (BFS) - Queue
 # 1차: 7, 8, 9번 케이스 시간 초과
+# 그래프 구현 방식: Adjacency Matrix, List
+# 2차: Adjacency List 적용해서 성공 (박동현님 감사)
+
 from collections import Counter
 from queue import Queue
 
 
-def solution(n, edges):
+def make_list(n, edges):
+    adj_list = [{"did": False, "ns": []} for _ in range(n + 1)]
+    for edge in edges:
+        adj_list[edge[0]]["ns"].append(edge[1])
+        adj_list[edge[1]]["ns"].append(edge[0])
+    return adj_list
+
+
+def solution(n, edge):
+    adjs = make_list(n, edge)
+    dist = {1: 0}
     nodes = Queue()
     nodes.put(1)
-    dist = {1: 0}
     while not nodes.empty():
-        here = nodes.get()
-        for idx, edge in enumerate(edges):
-            adj = edge[0] if here == edge[1] else edge[1] if here == edge[0] else -1
-            if adj > 0 and adj not in dist.keys():
+        node = nodes.get()
+        for adj in adjs[node]["ns"]:
+            if not adjs[adj]["did"]:
+                adjs[adj]["did"] = True
                 nodes.put(adj)
-                dist[adj] = min(dist.get(adj, dist[here] + 1), dist[here] + 1)
+                dist[adj] = min(dist.get(adj, dist[node] + 1), dist[node] + 1)
     cnts = Counter(dist.values())
     maxi = max(cnts.keys())
     return cnts[maxi]
